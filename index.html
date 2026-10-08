@@ -8,34 +8,46 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:'Nunito',system-ui,sans-serif;color:#4a4033;min-height:100vh;position:relative;
- background:linear-gradient(135deg,#f7f1e4 0%,#f1ebdc 45%,#e8eedd 100%);background-attachment:fixed}
+body{font-family:'Nunito',system-ui,sans-serif;color:#4a4033;min-height:100vh;position:relative;background:linear-gradient(135deg,#f7f1e4 0%,#f1ebdc 45%,#e8eedd 100%);background-attachment:fixed}
 #bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
-#bg span{position:absolute;opacity:.28;user-select:none;animation:fl 6s ease-in-out infinite;filter:saturate(.6) drop-shadow(0 3px 3px rgba(100,80,50,.12))}
-@keyframes fl{0%,100%{translate:0 0}50%{translate:0 -12px}}
-@media (prefers-reduced-motion:reduce){#bg span{animation:none}}
-main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 14px 48px}
-header{text-align:center;margin-bottom:22px}
-h1{font-family:'Playfair Display',serif;font-size:clamp(30px,6vw,48px);margin:0;color:#5f7c55}
-header p{margin:4px 0 14px;font-weight:600}
-.picker{display:inline-flex;gap:10px;align-items:center;background:#fffdf7;border:2px dashed #b9a98c;border-radius:16px;padding:10px 18px;box-shadow:0 4px 12px #6a583a1f}
+#bg span{position:absolute;opacity:.22;user-select:none;filter:saturate(.6)}
+main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:22px 14px 48px}
+header{text-align:center;margin-bottom:16px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);margin:0;color:#5f7c55}
+header p{margin:4px 0 14px;font-weight:600;font-size:15px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-bottom:18px}
+.picker{display:inline-flex;gap:10px;align-items:center;background:#fffdf7;border:1px solid #d9ccb0;border-radius:14px;padding:8px 14px;box-shadow:0 3px 10px #6a583a14}
 .picker label{font-weight:700}
-input[type=month]{font:inherit;padding:8px 10px;border:1px solid #e6d8bd;border-radius:8px;background:#fff;color:#3b2f22}
-.week{background:#fffdf7ee;border-radius:18px;margin-bottom:18px;box-shadow:0 4px 12px #6a583a1f;overflow:hidden;border:1px solid #e7dcc4}
-.week h2{font-family:'Playfair Display',serif;margin:0;padding:10px 16px;font-size:20px;color:#fff;background:var(--c);font-weight:600}
-.week:nth-child(4n+1){--c:#c49a7a}.week:nth-child(4n+2){--c:#8fa684}.week:nth-child(4n+3){--c:#b99ca0}.week:nth-child(4n+4){--c:#9c9db8}
-.dates{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:14px}
-.cell{background:#fff;border:1px solid #ece2cc;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px}
-.cell .d{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:var(--c);line-height:1}
-.meal{display:flex;align-items:center;gap:6px;min-height:34px;border-radius:9px;padding:3px 6px;background:var(--m)}
-.meal.b{--m:#f8efd9}.meal.l{--m:#e9f0e1}.meal.s{--m:#f5e6e6}
-.lbl{font-size:18px;flex:none}
-.dish{flex:1;font-size:14px;font-weight:700;word-break:break-word}
-.empty{flex:1;font-size:13px;opacity:.5;cursor:pointer}
-.meal input{flex:1;min-width:0;font:inherit;font-size:13px;padding:5px 6px;border:1px solid #d9c9a8;border-radius:7px}
-button{font:inherit;font-size:12px;font-weight:700;border:0;border-radius:7px;padding:5px 8px;cursor:pointer;color:#fff;background:#7f9a73}
-button.edit{background:#c49a7a}button.del{background:#c9bda6}
+input[type=month]{font:inherit;padding:6px 8px;border:1px solid #e6d8bd;border-radius:8px;background:#fff;color:#4a4033}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{font:inherit;font-size:14px;font-weight:700;border:1px solid #d9ccb0;background:#fffdf7;color:#6b5d48;border-radius:20px;padding:7px 15px;cursor:pointer}
+.chip.on{background:#7f9a73;border-color:#7f9a73;color:#fff}
+.week{background:#fffdf7e6;border-radius:18px;margin-bottom:18px;box-shadow:0 4px 14px #6a583a1a;overflow:hidden;border:1px solid #e7dcc4}
+.week h2{font-family:'Playfair Display',serif;margin:0;padding:10px 18px;font-size:19px;color:#fff;background:var(--c);display:flex;justify-content:space-between;align-items:baseline}
+.week h2 small{font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;opacity:.9}
+.week:nth-of-type(4n+1){--c:#b98f70}.week:nth-of-type(4n+2){--c:#8fa684}.week:nth-of-type(4n+3){--c:#b29297}.week:nth-of-type(4n+4){--c:#9496b3}
+.dates{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:14px}
+.cell{all:unset;box-sizing:border-box;cursor:pointer;background:#fff;border:1px solid #ece2cc;border-radius:14px;padding:10px 11px;min-height:138px;display:flex;flex-direction:column;gap:5px;transition:.15s}
+.cell:hover,.cell:focus-visible{border-color:var(--c);box-shadow:0 4px 12px #6a583a26;transform:translateY(-2px)}
+.cell.today{border:2px solid var(--c)}
+.d{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;line-height:1;color:var(--c);display:flex;justify-content:space-between;align-items:center}
+.d i{font-style:normal;font-size:16px;opacity:.35}
+.m{display:flex;gap:6px;font-size:13px;line-height:1.3;border-radius:7px;padding:3px 6px;background:var(--t);align-items:flex-start}
+.m.b{--t:#f8efd9}.m.l{--t:#e9f0e1}.m.s{--t:#f5e6e6}
+.m span{overflow-wrap:anywhere;font-weight:600}
+.none{margin:auto;font-size:13px;opacity:.45;text-align:center}
+dialog{border:0;border-radius:18px;padding:0;width:min(420px,92vw);box-shadow:0 20px 50px #0004;background:#fffdf7;color:#4a4033}
+dialog::backdrop{background:#3b2f2266}
+.dh{padding:14px 20px;background:#8fa684;color:#fff;font-family:'Playfair Display',serif;font-size:21px}
+.db{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.db label{font-weight:700;font-size:14px;display:block;margin-bottom:4px}
+.db input{width:100%;font:inherit;padding:10px;border:1px solid #d9ccb0;border-radius:10px;background:#fff;color:#4a4033}
+.db input:focus{outline:2px solid #8fa68466;border-color:#8fa684}
+.acts{display:flex;gap:8px;justify-content:flex-end;padding:0 20px 18px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;color:#fff;background:#7f9a73}
+.btn.g{background:#e9e1cf;color:#6b5d48}.btn.r{background:#c9a198;margin-right:auto}
 .note{text-align:center;font-size:13px;font-weight:600;margin-top:8px}
+@media (max-width:560px){.dates{grid-template-columns:repeat(2,1fr);gap:10px;padding:10px}.cell{min-height:120px}}
 </style>
 </head>
 <body>
@@ -44,78 +56,108 @@ button.edit{background:#c49a7a}button.del{background:#c9bda6}
   <header>
     <h1>🥗 Veg Meal Planner</h1>
     <p>Breakfast, lunch &amp; snacks for every date — 100% vegetarian</p>
-    <div class="picker"><label for="month">Month</label><input type="month" id="month"></div>
   </header>
+  <div class="bar">
+    <div class="picker"><label for="month">Month</label><input type="month" id="month"></div>
+    <div class="chips" id="chips"></div>
+  </div>
   <div id="planner"></div>
-  <p class="note">Saved in your browser on this device.</p>
+  <p class="note">Tap any date to add or edit its meals. Saved in your browser on this device.</p>
 </main>
+
+<dialog id="dlg">
+  <div class="dh" id="dt"></div>
+  <div class="db">
+    <div><label for="in-b">🥞 Breakfast</label><input id="in-b" maxlength="70" placeholder="e.g. Masala dosa"></div>
+    <div><label for="in-l">🍛 Lunch</label><input id="in-l" maxlength="70" placeholder="e.g. Paneer curry &amp; rice"></div>
+    <div><label for="in-s">🍿 Snacks</label><input id="in-s" maxlength="70" placeholder="e.g. Sprouts chaat"></div>
+  </div>
+  <div class="acts">
+    <button class="btn r" id="clr">Clear</button>
+    <button class="btn g" id="cancel">Cancel</button>
+    <button class="btn" id="save">Save</button>
+  </div>
+</dialog>
+
 <script>
 (function(){
   const icons=['🥕','🍅','🥦','🌽','🫑','🍆','🥬','🧅','🥒','🍄','🫛','🥔','🍋','🥣','🥘','🍲','🫕','🥄','🍴','🔪','🍚','🫓','🥗','🌿','🧄','🥜','🍎','🍌','🍇','🍉','🥭','🍓','🥑','🫒','🧁','🍵','🥞','🍛','🥪','🫘'];
-  const bg=document.getElementById('bg'),step=110;
-  const cols=Math.ceil(innerWidth/step)+1,rows=Math.ceil(innerHeight/step)+1;
-  let i=0;
+  const bg=document.getElementById('bg'),step=120;
+  const cols=Math.ceil(innerWidth/step)+1,rows=Math.ceil(innerHeight/step)+1;let i=0;
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
     const s=document.createElement('span');
     s.textContent=icons[(i++*7+r*3)%icons.length];
-    s.style.left=(c*step+(r%2?55:0)+Math.random()*20-10)+'px';
+    s.style.left=(c*step+(r%2?60:0)+Math.random()*20-10)+'px';
     s.style.top=(r*step+Math.random()*20-10)+'px';
-    s.style.fontSize=(38+Math.random()*28)+'px';
+    s.style.fontSize=(34+Math.random()*24)+'px';
     s.style.rotate=(Math.random()*60-30)+'deg';
-    s.style.animationDelay=(-Math.random()*6)+'s';
-    s.style.animationDuration=(5+Math.random()*4)+'s';
     bg.appendChild(s);
   }
 })();
 
 const MEALS=[['b','🥞','Breakfast'],['l','🍛','Lunch'],['s','🍿','Snacks']];
-const monthInput=document.getElementById('month'),planner=document.getElementById('planner');
+const $=id=>document.getElementById(id);
+const monthInput=$('month'),planner=$('planner'),chips=$('chips'),dlg=$('dlg');
 const KEY='vegPlannerMeals';
-let data={};
+let data={},week='all',cur=null;
 try{data=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function row(k,m,editing){
-  const [id,ico,name]=MEALS.find(x=>x[0]===m),v=data[k+'-'+m];
-  let inner;
-  if(editing||!v) inner=`<input type="text" placeholder="${name}" maxlength="60" value="${v?esc(v):''}"><button data-a="save">Save</button>`+(editing&&v?'<button class="del" data-a="cancel">✕</button>':'');
-  else inner=`<span class="dish">${esc(v)}</span><button class="edit" data-a="edit">Edit</button><button class="del" data-a="del">✕</button>`;
-  return `<div class="meal ${id}" data-k="${k}" data-m="${m}" title="${name}"><span class="lbl">${ico}</span>${inner}</div>`;
+function defaultWeek(){
+  const n=new Date(),[y,mo]=monthInput.value.split('-').map(Number);
+  return (y===n.getFullYear()&&mo===n.getMonth()+1)?Math.floor((n.getDate()-1)/7):0;
 }
 
 function render(){
   const m=monthInput.value;
-  if(!m){planner.innerHTML='<p style="text-align:center;font-weight:700">Pick a month to begin 🌱</p>';return}
-  const [y,mo]=m.split('-').map(Number),days=new Date(y,mo,0).getDate();
+  if(!m){planner.innerHTML='<p style="text-align:center;font-weight:700">Pick a month to begin 🌱</p>';chips.innerHTML='';return}
+  const [y,mo]=m.split('-').map(Number),days=new Date(y,mo,0).getDate(),nw=Math.ceil(days/7);
+  if(week!=='all'&&week>=nw)week=0;
+  const n=new Date(),isNow=y===n.getFullYear()&&mo===n.getMonth()+1;
+  chips.innerHTML=`<button class="chip ${week==='all'?'on':''}" data-w="all">All weeks</button>`+
+    Array.from({length:nw},(_,w)=>`<button class="chip ${week===w?'on':''}" data-w="${w}">Week ${w+1}</button>`).join('');
   let html='';
-  for(let w=0;w<Math.ceil(days/7);w++){
-    html+=`<section class="week"><h2>Week ${w+1}</h2><div class="dates">`;
-    for(let d=w*7+1;d<=Math.min(days,w*7+7);d++){
-      const k=m+'-'+d;
-      html+=`<div class="cell"><div class="d">${d}</div>${MEALS.map(x=>row(k,x[0])).join('')}</div>`;
+  for(let w=0;w<nw;w++){
+    if(week!=='all'&&week!==w)continue;
+    const a=w*7+1,b=Math.min(days,w*7+7);
+    html+=`<section class="week"><h2>Week ${w+1}<small>${MN[mo-1].slice(0,3)} ${a} – ${b}</small></h2><div class="dates">`;
+    for(let d=a;d<=b;d++){
+      const lines=MEALS.map(([id,ico])=>{const v=data[m+'-'+d+'-'+id];return v?`<div class="m ${id}">${ico}<span>${esc(v)}</span></div>`:''}).join('');
+      html+=`<button class="cell ${isNow&&d===n.getDate()?'today':''}" data-d="${d}"><div class="d">${d}<i>✎</i></div>${lines||'<div class="none">+ Add meals</div>'}</button>`;
     }
     html+='</div></section>';
   }
   planner.innerHTML=html;
 }
 
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;week=b.dataset.w==='all'?'all':+b.dataset.w;render()});
+
 planner.addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
-  const el=b.closest('.meal'),k=el.dataset.k,m=el.dataset.m,a=b.dataset.a,key=k+'-'+m;
-  if(a==='save'){const v=el.querySelector('input').value.trim();if(v){data[key]=v;persist()}}
-  if(a==='del'){delete data[key];persist()}
-  el.outerHTML=row(k,m,a==='edit');
-  if(a==='edit'){const i=planner.querySelector(`.meal[data-k="${k}"][data-m="${m}"] input`);i.focus();i.select()}
+  const c=e.target.closest('.cell');if(!c)return;
+  cur=+c.dataset.d;
+  const [y,mo]=monthInput.value.split('-').map(Number);
+  $('dt').textContent=MN[mo-1]+' '+cur;
+  MEALS.forEach(([id])=>$('in-'+id).value=data[monthInput.value+'-'+cur+'-'+id]||'');
+  dlg.showModal();$('in-b').focus();
 });
-planner.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&e.target.tagName==='INPUT')e.target.parentElement.querySelector('[data-a=save]').click();
-});
+
+function save(){
+  MEALS.forEach(([id])=>{const k=monthInput.value+'-'+cur+'-'+id,v=$('in-'+id).value.trim();v?data[k]=v:delete data[k]});
+  persist();dlg.close();render();
+}
+$('save').onclick=save;
+$('cancel').onclick=()=>dlg.close();
+$('clr').onclick=()=>{MEALS.forEach(([id])=>$('in-'+id).value='')};
+dlg.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT')save()});
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
 
 const now=new Date();
 let saved='';try{saved=localStorage.getItem('vegPlannerMonth')||''}catch(e){}
 monthInput.value=saved||now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-monthInput.addEventListener('change',()=>{try{localStorage.setItem('vegPlannerMonth',monthInput.value)}catch(e){}render()});
+week=defaultWeek();
+monthInput.addEventListener('change',()=>{try{localStorage.setItem('vegPlannerMonth',monthInput.value)}catch(e){}week=defaultWeek();render()});
 render();
 </script>
 </body>
