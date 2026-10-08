@@ -61,6 +61,7 @@ dialog::backdrop{background:#3b2f2266}
   <div class="bar">
     <div class="picker"><label for="month">Month</label><input type="month" id="month"></div>
     <div class="chips" id="chips"></div>
+    <button class="chip" id="syncbtn" title="Sync across devices">☁️ Sync: off</button>
   </div>
   <div id="planner"></div>
   <p class="note">Tap any date to add or edit its meals. Saved in your browser on this device.</p>
@@ -80,6 +81,8 @@ dialog::backdrop{background:#3b2f2266}
   </div>
 </dialog>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
   const icons=['🥕','🍅','🥦','🌽','🫑','🍆','🥬','🧅','🥒','🍄','🫛','🥔','🍋','🥣','🥘','🍲','🫕','🥄','🍴','🔪','🍚','🫓','🥗','🌿','🧄','🥜','🍎','🍌','🍇','🍉','🥭','🍓','🥑','🫒','🧁','🍵','🥞','🍛','🥪','🫘'];
@@ -155,8 +158,8 @@ planner.addEventListener('click',e=>{
 });
 
 function save(){
-  MEALS.forEach(([id])=>{const k=monthInput.value+'-'+cur+'-'+id,v=$('in-'+id).value.trim();v?data[k]=v:delete data[k]});
-  persist();dlg.close();render();
+  MEALS.forEach(([id])=>setMeal(monthInput.value+'-'+cur+'-'+id,$('in-'+id).value.trim()));
+  dlg.close();render();
 }
 $('save').onclick=save;
 $('cancel').onclick=()=>dlg.close();
@@ -164,12 +167,45 @@ $('clr').onclick=()=>{MEALS.forEach(([id])=>$('in-'+id).value='')};
 dlg.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT')save()});
 dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
 
+
+/* ===== Cloud sync (Firebase Firestore) — paste your config below ===== */
+const FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",appId:""};
+let docRef=null;
+const syncBtn=$('syncbtn');
+const setStatus=t=>{syncBtn.textContent=t};
+function setMeal(k,v){
+  v?data[k]=v:delete data[k];
+  persist();
+  if(docRef)docRef.set({meals:{[k]:v||firebase.firestore.FieldValue.delete()}},{merge:true}).catch(()=>setStatus('⚠️ Sync error'));
+}
+function askCode(){
+  const c=(prompt('Enter a private sync code (min 6 letters/numbers). Use the SAME code on all your devices:')||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'-');
+  if(c.length>=6){try{localStorage.setItem('vegPlannerCode',c)}catch(e){}return c}
+  return '';
+}
+function startCloud(change){
+  if(!FIREBASE_CONFIG.apiKey||!window.firebase){setStatus('☁️ Sync: not set up');return}
+  let code='';try{code=change?'':(localStorage.getItem('vegPlannerCode')||'')}catch(e){}
+  if(!code)code=askCode();
+  if(!code){setStatus('☁️ Sync: off');return}
+  if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+  if(window._unsub)window._unsub();
+  docRef=firebase.firestore().collection('planners').doc(code);
+  window._unsub=docRef.onSnapshot(snap=>{
+    if(snap.exists)data=Object.assign({},snap.data().meals||{});
+    else if(Object.keys(data).length)docRef.set({meals:data});
+    persist();render();setStatus('☁️ Synced');
+  },()=>setStatus('⚠️ Sync error'));
+}
+syncBtn.addEventListener('click',()=>{if(!FIREBASE_CONFIG.apiKey){alert('Cloud sync is not set up yet. Add your Firebase config in index.html.');return}startCloud(true)});
+
 const now=new Date();
 let saved='';try{saved=localStorage.getItem('vegPlannerMonth')||''}catch(e){}
 monthInput.value=saved||now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
 week=defaultWeek();
 monthInput.addEventListener('change',()=>{try{localStorage.setItem('vegPlannerMonth',monthInput.value)}catch(e){}week=defaultWeek();render()});
 render();
+startCloud();
 </script>
 </body>
 </html>
