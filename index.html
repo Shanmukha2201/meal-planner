@@ -31,7 +31,7 @@ input[type=month]{font:inherit;padding:6px 8px;border:1px solid #e6d8bd;border-r
 .cell:hover,.cell:focus-visible{border-color:var(--c);box-shadow:0 4px 12px #6a583a26;transform:translateY(-2px)}
 .cell.today{border:2px solid var(--c)}
 .d{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;line-height:1;color:var(--c);display:flex;justify-content:space-between;align-items:center}
-.d i{font-style:normal;font-size:16px;opacity:.35}
+.d i{font-family:'Nunito',sans-serif;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7a6c57;background:#f3ecdc;border-radius:6px;padding:3px 7px}
 .m{display:flex;gap:6px;font-size:13px;line-height:1.3;border-radius:7px;padding:3px 6px;background:var(--t);align-items:flex-start}
 .m.b{--t:#f8efd9}.m.l{--t:#e9f0e1}.m.s{--t:#f5e6e6}
 .m span{overflow-wrap:anywhere;font-weight:600}
@@ -47,6 +47,7 @@ dialog::backdrop{background:#3b2f2266}
 .btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;color:#fff;background:#7f9a73}
 .btn.g{background:#e9e1cf;color:#6b5d48}.btn.r{background:#c9a198;margin-right:auto}
 .note{text-align:center;font-size:13px;font-weight:600;margin-top:8px}
+@media (min-width:900px){.dates{grid-template-columns:repeat(7,1fr)}.cell.first{grid-column-start:calc(var(--off) + 1)}}
 @media (max-width:560px){.dates{grid-template-columns:repeat(2,1fr);gap:10px;padding:10px}.cell{min-height:120px}}
 </style>
 </head>
@@ -105,30 +106,40 @@ const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+const DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],DF=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const dIdx=(y,mo,d)=>(new Date(y,mo-1,d).getDay()+6)%7;
+function weeksOf(y,mo){
+  const days=new Date(y,mo,0).getDate(),off=dIdx(y,mo,1),ws=[];
+  let st=1,en=Math.min(days,7-off);
+  while(st<=days){ws.push([st,en]);st=en+1;en=Math.min(days,st+6)}
+  return {ws,off};
+}
 function defaultWeek(){
   const n=new Date(),[y,mo]=monthInput.value.split('-').map(Number);
-  return (y===n.getFullYear()&&mo===n.getMonth()+1)?Math.floor((n.getDate()-1)/7):0;
+  if(y!==n.getFullYear()||mo!==n.getMonth()+1)return 0;
+  const i=weeksOf(y,mo).ws.findIndex(([a,b])=>n.getDate()>=a&&n.getDate()<=b);
+  return i<0?0:i;
 }
 
 function render(){
   const m=monthInput.value;
   if(!m){planner.innerHTML='<p style="text-align:center;font-weight:700">Pick a month to begin 🌱</p>';chips.innerHTML='';return}
-  const [y,mo]=m.split('-').map(Number),days=new Date(y,mo,0).getDate(),nw=Math.ceil(days/7);
+  const [y,mo]=m.split('-').map(Number),{ws,off}=weeksOf(y,mo),nw=ws.length;
   if(week!=='all'&&week>=nw)week=0;
   const n=new Date(),isNow=y===n.getFullYear()&&mo===n.getMonth()+1;
   chips.innerHTML=`<button class="chip ${week==='all'?'on':''}" data-w="all">All weeks</button>`+
-    Array.from({length:nw},(_,w)=>`<button class="chip ${week===w?'on':''}" data-w="${w}">Week ${w+1}</button>`).join('');
+    ws.map(([a,b],w)=>`<button class="chip ${week===w?'on':''}" data-w="${w}">Week ${w+1}</button>`).join('');
   let html='';
-  for(let w=0;w<nw;w++){
-    if(week!=='all'&&week!==w)continue;
-    const a=w*7+1,b=Math.min(days,w*7+7);
-    html+=`<section class="week"><h2>Week ${w+1}<small>${MN[mo-1].slice(0,3)} ${a} – ${b}</small></h2><div class="dates">`;
+  ws.forEach(([a,b],w)=>{
+    if(week!=='all'&&week!==w)return;
+    html+=`<section class="week"><h2>Week ${w+1}<small>${DN[dIdx(y,mo,a)]} ${a} – ${DN[dIdx(y,mo,b)]} ${b} ${MN[mo-1].slice(0,3)}</small></h2><div class="dates">`;
     for(let d=a;d<=b;d++){
       const lines=MEALS.map(([id,ico])=>{const v=data[m+'-'+d+'-'+id];return v?`<div class="m ${id}">${ico}<span>${esc(v)}</span></div>`:''}).join('');
-      html+=`<button class="cell ${isNow&&d===n.getDate()?'today':''}" data-d="${d}"><div class="d">${d}<i>✎</i></div>${lines||'<div class="none">+ Add meals</div>'}</button>`;
+      const first=w===0&&d===a;
+      html+=`<button class="cell ${isNow&&d===n.getDate()?'today':''} ${first?'first':''}" ${first?`style="--off:${off}"`:''} data-d="${d}"><div class="d">${d}<i>${DN[dIdx(y,mo,d)]}</i></div>${lines||'<div class="none">+ Add meals</div>'}</button>`;
     }
     html+='</div></section>';
-  }
+  });
   planner.innerHTML=html;
 }
 
@@ -138,7 +149,7 @@ planner.addEventListener('click',e=>{
   const c=e.target.closest('.cell');if(!c)return;
   cur=+c.dataset.d;
   const [y,mo]=monthInput.value.split('-').map(Number);
-  $('dt').textContent=MN[mo-1]+' '+cur;
+  $('dt').textContent=DF[dIdx(y,mo,cur)]+', '+cur+' '+MN[mo-1]+' '+y;
   MEALS.forEach(([id])=>$('in-'+id).value=data[monthInput.value+'-'+cur+'-'+id]||'');
   dlg.showModal();$('in-b').focus();
 });
